@@ -1,0 +1,18 @@
+# Build the binary versions of these packages instead.
+dev-util/shellcheck
+sys-kernel/gentoo-kernel
+sys-kernel/gentoo-sources
+sys-kernel/genkernel
+www-client/chromium
+app-text/pandoc
+dev-java/icedtea
+dev-java/openjdk
+virtual/jdk
+virtual/jre
+app-office/libreoffice
+www-client/firefox
+
+# Compile these from source instead.
+dev-lang/rust-bin
+#app-office/libreoffice-bin
+#www-client/firefox-bin

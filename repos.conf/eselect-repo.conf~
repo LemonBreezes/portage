@@ -1,0 +1,37 @@
+# created by eselect-repo
+
+[src_prepare-overlay]
+location = /var/db/repos/src_prepare-overlay
+sync-type = git
+sync-uri = https://github.com/gentoo-mirror/src_prepare-overlay.git
+
+[nest]
+location = /var/db/repos/nest
+sync-type = git
+sync-uri = https://github.com/gentoo-mirror/nest.git
+
+
+[guru]
+location = /var/db/repos/guru
+sync-type = git
+sync-uri = https://github.com/gentoo-mirror/guru.git
+
+[haskell]
+location = /var/db/repos/haskell
+sync-type = git
+sync-uri = https://github.com/gentoo-mirror/haskell.git
+
+[xwing]
+location = /var/db/repos/xwing
+sync-type = git
+sync-uri = https://github.com/gentoo-mirror/xwing.git
+
+[pentoo]
+location = /var/db/repos/pentoo
+sync-type = git
+sync-uri = https://github.com/gentoo-mirror/pentoo.git
+
+[tastytea]
+location = /var/db/repos/tastytea
+sync-type = git
+sync-uri = https://github.com/gentoo-mirror/tastytea.git

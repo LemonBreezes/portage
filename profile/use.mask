@@ -1,0 +1,2 @@
+-custom-cflags
+-lto
