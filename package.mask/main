@@ -9,10 +9,10 @@ dev-java/icedtea
 dev-java/openjdk
 virtual/jdk
 virtual/jre
-app-office/libreoffice
+#app-office/libreoffice
 www-client/firefox
 
 # Compile these from source instead.
 dev-lang/rust-bin
-#app-office/libreoffice-bin
+app-office/libreoffice-bin
 #www-client/firefox-bin
