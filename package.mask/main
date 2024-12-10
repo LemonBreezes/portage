@@ -8,7 +8,7 @@ app-text/pandoc
 dev-java/icedtea
 dev-java/openjdk
 www-client/firefox
+dev-lang/rust
 
 # Compile these from source instead.
-dev-lang/rust-bin
 app-office/libreoffice-bin
