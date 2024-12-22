@@ -10,5 +10,8 @@ dev-java/openjdk
 www-client/firefox
 dev-lang/rust
 
+# Is not compatible with some things.
+=dev-libs/boost-1.87.0
+
 # Compile these from source instead.
 app-office/libreoffice-bin
