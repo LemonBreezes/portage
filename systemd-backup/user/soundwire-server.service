@@ -1,14 +1,12 @@
 [Unit]
 Description=SoundWire Server
-After=network.target
+After=network.target sound.target
 
 [Service]
 Type=simple
-User=st
-Group=wheel
-WorkingDirectory=/home/st/src/SoundWireServer/
+WorkingDirectory=/opt/SoundWireServer/
 ExecStart=/usr/bin/env QT_QPA_PLATFORM=offscreen ./SoundWireServer -nogui
 Restart=on-failure
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=default.target
