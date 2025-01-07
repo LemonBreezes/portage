@@ -15,3 +15,8 @@ dev-lang/rust
 
 # Compile these from source instead.
 app-office/libreoffice-bin
+
+# Some overlay package versions do not build.
+dev-lang/python::pg_overlay
+app-office/libreoffice::pg_overlay
+app-office/libreoffice-l10n::pg_overlay

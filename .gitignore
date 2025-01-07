@@ -5,3 +5,4 @@ tmp/
 
 savedconfig/
 gnupg/
+.aider*
