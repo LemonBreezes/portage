@@ -2,6 +2,7 @@
 .idea
 *.log
 tmp/
+._*
 
 savedconfig/
 gnupg/
