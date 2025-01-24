@@ -1,0 +1,13 @@
+[Unit]
+Description=EasyEffects Background Service
+After=pipewire.service xvfb@99.service
+Requires=xvfb@99.service
+
+[Service]
+Type=simple
+Environment=DISPLAY=:99
+ExecStart=/usr/bin/easyeffects --gapplication-service -l LoudnessCrystalEqualizer
+Restart=on-failure
+
+[Install]
+WantedBy=default.target

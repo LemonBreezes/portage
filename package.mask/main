@@ -20,3 +20,6 @@ app-office/libreoffice-bin
 dev-lang/python::pg_overlay
 app-office/libreoffice::pg_overlay
 app-office/libreoffice-l10n::pg_overlay
+
+# Causing other builds to fail.
+gnome-base/librsvg::pg_overlay

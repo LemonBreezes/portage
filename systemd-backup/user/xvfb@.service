@@ -1,0 +1,11 @@
+[Unit]
+Description=Virtual Framebuffer X Server for display %I
+After=network.target
+
+[Service]
+Type=simple
+ExecStart=/usr/bin/Xvfb :%i -screen 0 1x1x16 -extension GLX
+Restart=on-failure
+
+[Install]
+WantedBy=multi-user.target
