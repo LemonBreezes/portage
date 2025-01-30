@@ -31,7 +31,43 @@ location = /var/db/repos/pentoo
 sync-type = git
 sync-uri = https://github.com/gentoo-mirror/pentoo.git
 
-[tastytea]
-location = /var/db/repos/tastytea
+
+[brother-overlay]
+location = /var/db/repos/brother-overlay
 sync-type = git
-sync-uri = https://github.com/gentoo-mirror/tastytea.git
+sync-uri = https://github.com/gentoo-mirror/brother-overlay.git
+
+[torbrowser]
+location = /var/db/repos/torbrowser
+sync-type = git
+sync-uri = https://github.com/gentoo-mirror/torbrowser.git
+
+[arrans-overlay]
+location = /var/db/repos/arrans-overlay
+sync-type = git
+sync-uri = https://github.com/gentoo-mirror/arrans-overlay.git
+
+[broverlay]
+location = /var/db/repos/broverlay
+sync-type = git
+sync-uri = https://github.com/gentoo-mirror/broverlay.git
+
+[stuff]
+location = /var/db/repos/stuff
+sync-type = git
+sync-uri = https://github.com/gentoo-mirror/stuff.git
+
+[mva]
+location = /var/db/repos/mva
+sync-type = git
+sync-uri = https://github.com/gentoo-mirror/mva.git
+
+[pg_overlay]
+location = /var/db/repos/pg_overlay
+sync-type = git
+sync-uri = https://github.com/gentoo-mirror/pg_overlay.git
+
+[parona-overlay]
+location = /var/db/repos/parona-overlay
+sync-type = git
+sync-uri = https://github.com/gentoo-mirror/parona-overlay.git
