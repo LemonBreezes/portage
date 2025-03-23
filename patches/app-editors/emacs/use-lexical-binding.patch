@@ -1,0 +1,22 @@
+diff --git a/src/lread.c b/src/lread.c
+index add8deb3954..5962d344f0b 100644
+--- a/src/lread.c
++++ b/src/lread.c
+@@ -1522,7 +1522,7 @@ Return t if the file exists and loads successfully.  */)
+      otherwise using a file-variable in the first line.  This is bound here
+      so that it takes effect whether or not we use
+      Vload_source_file_function.  */
+-  specbind (Qlexical_binding, Qnil);
++  specbind (Qlexical_binding, Qt);
+ 
+   Lisp_Object found_eff =
+     is_native_elisp
+@@ -6053,7 +6053,7 @@ with lexical binding.
+ This variable is automatically set from the file variables of an
+ interpreted Lisp file read using `load'.  Unlike other file local
+ variables, this must be set in the first line of a file.  */);
+-  Vlexical_binding = Qnil;
++  Vlexical_binding = Qt;
+   Fmake_variable_buffer_local (Qlexical_binding);
+ 
+   DEFVAR_LISP ("eval-buffer-list", Veval_buffer_list,
