@@ -7,3 +7,4 @@ tmp/
 savedconfig/
 gnupg/
 .aider*
+.projectile*
