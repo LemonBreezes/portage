@@ -22,3 +22,6 @@ app-portage/genlop::src_prepare-overlay
 
 # Causing other builds to fail.
 gnome-base/librsvg::pg_overlay
+
+# This version fails to build
+=app-shells/fish-4.0.1
