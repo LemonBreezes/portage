@@ -3,7 +3,6 @@ dev-util/shellcheck
 sys-kernel/gentoo-kernel
 sys-kernel/gentoo-sources
 sys-kernel/genkernel
-www-client/chromium
 app-text/pandoc
 dev-java/icedtea
 dev-java/openjdk
@@ -23,5 +22,8 @@ app-portage/genlop::src_prepare-overlay
 # Causing other builds to fail.
 gnome-base/librsvg::pg_overlay
 
-# This version fails to build
+# This version fails to build.
 =app-shells/fish-4.0.1
+
+# The IGC Emacs is broken right now.
+app-editors/emacs::cae
