@@ -27,3 +27,18 @@ gnome-base/librsvg::pg_overlay
 
 # The IGC Emacs is broken right now.
 app-editors/emacs::cae
+
+# Pahole BTF encoding fails on nvidia-modeset.ko with current kernel.
+# Re-enable once the kernel is built without CONFIG_DEBUG_INFO_BTF_MODULES,
+# or upstream pahole/nvidia handle the unsupported DW_TAG_reference_type.
+x11-drivers/nvidia-drivers
+
+# Hold the kernel at the 6.19 series: sys-fs/zfs-2.4.x caps
+# MODULES_KERNEL_MAX at 6.19, so building zfs against kernel 7.x dies in
+# pkg_setup ("Linux 6.19 is the latest supported version"). Drop the
+# mask when sys-fs/zfs ships an ebuild that supports kernel 7.x.
+>=sys-kernel/gentoo-kernel-bin-7
+>=sys-kernel/gentoo-kernel-7
+>=sys-kernel/gentoo-sources-7
+>=sys-kernel/vanilla-kernel-7
+>=virtual/dist-kernel-7

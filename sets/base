@@ -1,5 +1,6 @@
 app-admin/doas
 app-admin/sudo
+app-admin/sysklogd
 app-arch/dpkg
 app-arch/lzop
 app-arch/p7zip
@@ -13,7 +14,6 @@ app-arch/zip
 app-containers/docker
 app-containers/docker-cli
 app-containers/docker-compose
-app-containers/nvidia-container-toolkit
 app-dicts/aspell-en
 app-editors/emacs
 app-editors/emacs-lsp-booster
@@ -68,8 +68,6 @@ dev-python/isort
 dev-python/nose2
 dev-python/pandas
 dev-python/pip
-dev-python/pipenv
-dev-python/pipx
 dev-python/pyflakes
 dev-python/pygame
 dev-python/pytest
@@ -81,7 +79,7 @@ dev-util/difftastic
 dev-util/dwdiff
 dev-util/github-cli
 dev-util/lua-language-server
-dev-util/rr
+dev-debug/rr
 dev-util/sh
 dev-util/shellcheck-bin
 dev-util/tokei
@@ -92,7 +90,6 @@ games-engines/love
 games-misc/cowsay
 gnome-base/librsvg
 gnome-extra/nm-applet
-gui-apps/1password
 kde-misc/kdeconnect
 llvm-core/clang
 llvm-core/llvm
@@ -114,7 +111,6 @@ media-libs/mesa
 media-libs/portaudio
 media-libs/vulkan-layers
 media-libs/vulkan-loader
-media-sound/easyeffects
 media-sound/fluidsynth
 media-sound/lame
 media-sound/mp3val
@@ -138,8 +134,6 @@ net-misc/openntpd
 net-misc/yt-dlp
 net-p2p/qbittorrent
 net-p2p/syncthing
-net-print/brother-genml1-bin
-net-print/brother-hll2340dw-bin
 net-print/cups-filters
 net-print/cups-meta
 net-print/gutenprint
@@ -151,14 +145,13 @@ sys-apps/dmidecode
 sys-apps/fd
 sys-apps/inxi
 sys-apps/lshw
-sys-apps/nix
+sys-apps/openrc
 sys-apps/plocate
 sys-apps/ripgrep-all
+sys-apps/sysvinit
 sys-auth/rtkit
 sys-block/gparted
 sys-boot/etcher-bin
-sys-boot/grub
-sys-boot/os-prober
 sys-devel/binutils
 sys-devel/gcc
 sys-devel/mold
@@ -169,7 +162,10 @@ sys-fs/f2fs-tools
 sys-fs/fuse
 sys-fs/ntfs3g
 sys-fs/udiskie
+sys-fs/zfs
+sys-fs/zfs-kmod
 sys-kernel/linux-firmware
+sys-kernel/modprobed-db
 sys-libs/glibc
 sys-libs/zlib
 sys-process/cronie
