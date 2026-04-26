@@ -8,5 +8,6 @@ tmp/
 package.use/00cpu-flags
 savedconfig/
 gnupg/
+repos.conf/
 .aider*
 .projectile*
