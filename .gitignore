@@ -9,5 +9,6 @@ package.use/00cpu-flags
 savedconfig/
 gnupg/
 repos.conf/
+make.profile
 .aider*
 .projectile*
