@@ -90,7 +90,6 @@ games-engines/love
 games-misc/cowsay
 gnome-base/librsvg
 gnome-extra/nm-applet
-kde-misc/kdeconnect
 llvm-core/clang
 llvm-core/llvm
 media-fonts/dejavu
