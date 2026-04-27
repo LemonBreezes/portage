@@ -123,8 +123,6 @@ media-video/ffmpeg
 media-video/mpv
 media-video/obs-studio
 net-analyzer/netcat
-net-im/signal-desktop-bin
-net-im/teams-for-linux
 net-libs/libssh
 net-libs/nodejs
 net-mail/isync
