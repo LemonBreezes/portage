@@ -1,0 +1,1 @@
+This is my personal Gentoo configuration. I run Emacs with the Emacs X Window Manager (EXWM) as my entire desktop. I use the hardened Gentoo profile plus secure boot and prioritize security, to the extent possible without making the system "outright unusable". Hopefully this helps you achieve a similar setup and disconnects you from centralized systems.
