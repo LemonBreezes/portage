@@ -119,7 +119,6 @@ media-sound/mpd
 media-sound/pamixer
 media-sound/pavucontrol
 media-sound/playerctl
-media-sound/spotify
 media-video/ffmpeg
 media-video/mpv
 media-video/obs-studio
@@ -173,7 +172,6 @@ sys-process/htop
 sys-process/iotop
 sys-process/lsof
 www-client/elinks
-www-client/firefox-bin
 www-client/surfraw
 www-client/w3m
 x11-apps/mesa-progs
