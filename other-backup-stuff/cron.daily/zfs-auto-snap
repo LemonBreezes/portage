@@ -1,0 +1,19 @@
+#!/bin/sh
+# ZFS auto-snapshot: take a daily snapshot of the root dataset and prune
+# to keep the last KEEP snapshots with this tag. Self-contained, no-ops
+# on machines without zfs or without the dataset.
+set -eu
+
+DATASET=rpool/ROOT/default
+TAG=daily
+KEEP=14
+
+[ -x /usr/bin/zfs ] || exit 0
+/usr/bin/zfs list -H -o name "$DATASET" >/dev/null 2>&1 || exit 0
+
+/usr/bin/zfs snapshot "${DATASET}@auto-${TAG}-$(date +%Y%m%d-%H%M%S)"
+
+/usr/bin/zfs list -H -o name -t snapshot -s creation \
+    | grep -F "${DATASET}@auto-${TAG}-" \
+    | head -n "-${KEEP}" \
+    | xargs -r -n1 /usr/bin/zfs destroy
