@@ -1,0 +1,18 @@
+# Per-host GPU settings, sourced from /etc/portage/make.conf.
+# Not tracked in git; reference copy lives in other-backup-stuff/.
+#
+# UGPU is concatenated into USE in make.conf — put per-vendor USE flags
+# here (nvidia, amdgpu, intel-media, vaapi, vdpau, vulkan, opencl, cuda…).
+# VIDEO_CARDS lists the X/Wayland drivers to build.
+
+VIDEO_CARDS="nvidia"
+UGPU="nvidia vdpau nvenc vulkan opengl cuda"
+
+# CUDA toolchain (nvidia-only; remove on systems without CUDA).
+CUDAHOSTCXX="/usr/x86_64-pc-linux-gnu/gcc-bin/12"
+NVCC_PREPEND_FLAGS="--compiler-bindir /usr/x86_64-pc-linux-gnu/gcc-bin/12"
+CUDA_ARCH="sm_61 sm_86"
+CUDA_ARCH_BIN="6.1 8.6"
+CUDA_GENERATION="Pascal Ampere"
+CUDA_VERBOSE="false"
+TORCH_CUDA_ARCH_LIST="6.1;8.6"

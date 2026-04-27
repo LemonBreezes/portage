@@ -10,5 +10,6 @@ savedconfig/
 gnupg/
 repos.conf/
 make.profile
+/make.conf.gpu
 .aider*
 .projectile*
