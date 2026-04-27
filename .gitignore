@@ -6,6 +6,7 @@ tmp/
 ._*
 
 package.use/00cpu-flags
+package.use/zz-autounmask
 savedconfig/
 gnupg/
 repos.conf/
