@@ -1,0 +1,1 @@
+root=ZFS=rpool/ROOT/default rw amd_iommu=on iommu=force iommu.strict=1 efi=disable_early_pci_dma slab_nomerge init_on_alloc=1 init_on_free=1 randomize_kstack_offset=on vsyscall=none debugfs=no-mount mitigations=auto
