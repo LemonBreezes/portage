@@ -1,0 +1,60 @@
+#!/bin/sh
+# Keep exactly ONE bootable EFI binary on the ESP.
+#
+# kernel-install (layout=uki) drops the UKI at /boot/EFI/Linux/<ver>.efi.
+# We mirror it to /boot/EFI/BOOT/BOOTX64.EFI (the UEFI fallback path that
+# firmware auto-discovers as a generic "UEFI OS" Boot####) and then
+# delete every /boot/EFI/Linux/*.efi.
+#
+# Why two-step instead of just copy:
+#   - Many firmwares (notably MSI X670E + others with FQ0001) build the
+#     boot menu from every .efi file found on the ESP, not just NVRAM
+#     entries. Two files on disk -> two Gentoo entries in the menu.
+#   - The /EFI/BOOT/BOOTX64.EFI fallback is firmware-discovered, so the
+#     entry survives MSI's quirk of silently demoting custom efibootmgr
+#     entries on reboot. Custom entries we'd add via efibootmgr can vanish.
+#   - Keeping nothing under /EFI/Linux/ also means kernel rotation (and
+#     any leftover *-old.efi) cannot leak extra menu entries.
+ver=$1
+img=$2
+
+case "$img" in
+	*/EFI/Linux/*.efi) ;;
+	*) exit 0 ;;
+esac
+
+[ -f "$img" ] || exit 0
+
+esp=${img%/EFI/Linux/*}
+fallback=$esp/EFI/BOOT/BOOTX64.EFI
+
+mkdir -p "${fallback%/*}"
+
+# Atomically replace BOOTX64.EFI: write alongside, sync, rename over.
+# FAT32 has no journal so this is best-effort, but it avoids leaving
+# a partially-written BOOTX64.EFI if we're interrupted mid-copy.
+install -m 0700 "$img" "${fallback}.new"
+sync
+mv -f "${fallback}.new" "$fallback"
+
+# sbctl bookkeeping: drop tracking for everything under /EFI/Linux/, then
+# track BOOTX64.EFI. (Only do this if sbctl keys are actually installed,
+# matching the existing 91-sbctl.install gate.)
+if command -v sbctl >/dev/null 2>&1 \
+   && [ "$(sbctl setup --print-state --json 2>/dev/null \
+           | awk '/installed/ { gsub(/,$/,"",$2); print $2 }')" = "true" ]; then
+	for stale in "$esp/EFI/Linux/"*.efi; do
+		[ -f "$stale" ] || continue
+		sbctl remove-file "$stale" >/dev/null 2>&1 || :
+	done
+	# `sbctl sign -s` short-circuits without touching the DB if the file
+	# already has a valid signature, so strip the inherited PE sig first
+	# to guarantee sbctl saves the path on every install.
+	command -v sbattach >/dev/null 2>&1 \
+		&& sbattach --remove "$fallback" >/dev/null 2>&1 || :
+	sbctl sign -s "$fallback" >/dev/null
+fi
+
+# Drop the per-version UKI (and any rotated *-old.efi siblings) so the
+# firmware sees only BOOTX64.EFI.
+rm -f "$esp/EFI/Linux/"*.efi

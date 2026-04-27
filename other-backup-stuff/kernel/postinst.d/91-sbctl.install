@@ -1,0 +1,19 @@
+#!/bin/sh
+# Override of /usr/lib/kernel/postinst.d/91-sbctl.install (sbctl 0.18).
+# Upstream ships #!/bin/sh shebang but uses [[ ]] bashisms — under dash
+# (the configured /bin/sh on this system) the EUID check fires "die"
+# and aborts kernel install. Drop this override once upstream fixes
+# the shebang or the bashisms.
+ver=$1
+img=$2
+
+if ! [ "$(sbctl setup --print-state --json | awk '/installed/ { gsub(/,$/,"",$2); print $2 }')" = "true" ]; then
+	exit 0
+fi
+
+if [ "$(id -u)" -ne 0 ]; then
+	echo "Please run this script as root" >&2
+	exit 1
+fi
+
+sbctl sign -s "$img" 1>/dev/null
