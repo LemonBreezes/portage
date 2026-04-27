@@ -30,8 +30,8 @@ app-misc/tmux
 app-office/libreoffice
 app-portage/cpuid2cpuflags
 app-portage/eix
-app-portage/genlop
 app-portage/gentoolkit
+app-portage/portage-utils
 app-portage/smart-live-rebuild
 app-shells/atuin
 app-shells/bash-completion
@@ -172,6 +172,7 @@ sys-process/htop
 sys-process/iotop
 sys-process/lsof
 www-client/elinks
+www-client/firefox-bin
 www-client/surfraw
 www-client/w3m
 x11-apps/mesa-progs

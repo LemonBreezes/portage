@@ -1,6 +1,5 @@
 # Build the binary versions of these packages instead.
 dev-util/shellcheck
-sys-kernel/gentoo-kernel
 sys-kernel/gentoo-sources
 sys-kernel/genkernel
 app-text/pandoc
@@ -17,13 +16,9 @@ dev-lang/python::pg_overlay
 app-office/libreoffice::pg_overlay
 app-office/libreoffice-l10n::pg_overlay
 dev-util/shfmt::nest
-app-portage/genlop::src_prepare-overlay
 
 # Causing other builds to fail.
 gnome-base/librsvg::pg_overlay
-
-# This version fails to build or install.
-=app-shells/fish-4.0.1
 
 # The IGC Emacs is broken right now.
 app-editors/emacs::cae
