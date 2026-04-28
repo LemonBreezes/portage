@@ -25,6 +25,7 @@ app-eselect/eselect-ld
 app-eselect/eselect-python
 app-eselect/eselect-repository
 app-misc/dtach
+app-misc/geoclue
 app-misc/jq
 app-misc/tmux
 app-office/libreoffice
