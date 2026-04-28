@@ -18,7 +18,7 @@ index 2ec55ed98ee..ca8e4574c3b 100644
 -(defcustom native-comp-driver-options
 -  (cond ((eq system-type 'darwin) '("-Wl,-w"))
 -        ((eq system-type 'cygwin) '("-Wl,-dynamicbase")))
-+(defcustom native-comp-driver-options '("-march=znver5" "-O3" "-g0")
++(defcustom native-comp-driver-options '("-O3" "-g0")
    "Options passed verbatim to the native compiler's back-end driver.
  Note that not all options are meaningful; typically only the options
  affecting the assembler and linker are likely to be useful.
