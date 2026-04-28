@@ -1,0 +1,13 @@
+# Hardware-specific packages for ASUS ROG Strix G713PI.
+# Install with: emerge -avn @asus-rog-laptop
+
+# ROG control daemon: fan curves, performance profile, mux switch,
+# panel overdrive. Lighter alternative to upstream asusctl, which
+# isn't packaged in the enabled overlays.
+sys-power/rog-daemon
+
+# Generic D-Bus power profile manager. Pairs well with amd_pstate=active
+# on Ryzen 7000 and integrates with most desktop environments.
+sys-power/power-profiles-daemon
+
+x11-misc/cbatticon

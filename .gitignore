@@ -7,6 +7,7 @@ tmp/
 
 package.use/00cpu-flags
 package.use/zz-autounmask
+package.use/gpu.conf
 savedconfig/
 gnupg/
 repos.conf/

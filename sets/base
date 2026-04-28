@@ -31,6 +31,7 @@ app-misc/tmux
 app-office/libreoffice
 app-portage/cpuid2cpuflags
 app-portage/eix
+app-portage/genlop
 app-portage/gentoolkit
 app-portage/portage-utils
 app-portage/smart-live-rebuild
