@@ -147,6 +147,7 @@ sys-apps/ripgrep-all
 sys-apps/sysvinit
 sys-auth/rtkit
 sys-block/gparted
+sys-block/io-scheduler-udev-rules
 sys-devel/binutils
 sys-devel/gcc
 sys-devel/mold
