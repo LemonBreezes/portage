@@ -1,0 +1,3 @@
+# Update modprobed-db every 6 hours for user `st`.
+# DB lives at ~st/.config/modprobed.db
+0 */6 * * * st /usr/bin/modprobed-db store >/dev/null 2>&1
