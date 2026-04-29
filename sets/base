@@ -171,6 +171,7 @@ sys-process/iotop
 sys-process/lsof
 www-client/elinks
 www-client/firefox-bin
+www-client/librewolf-bin
 www-client/surfraw
 www-client/w3m
 x11-apps/mesa-progs
