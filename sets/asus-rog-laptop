@@ -11,3 +11,4 @@ sys-power/rog-daemon
 sys-power/power-profiles-daemon
 
 x11-misc/cbatticon
+sys-power/powertop
