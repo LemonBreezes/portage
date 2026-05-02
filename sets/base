@@ -1,5 +1,3 @@
-app-admin/doas
-app-admin/sudo
 app-admin/sysklogd
 app-arch/dpkg
 app-arch/lzop
