@@ -4,16 +4,10 @@
 # (the configured /bin/sh on this system) the EUID check fires "die"
 # and aborts kernel install. Drop this override once upstream fixes
 # the shebang or the bashisms.
-ver=$1
-img=$2
-
-if ! [ "$(sbctl setup --print-state --json | awk '/installed/ { gsub(/,$/,"",$2); print $2 }')" = "true" ]; then
-	exit 0
-fi
-
-if [ "$(id -u)" -ne 0 ]; then
-	echo "Please run this script as root" >&2
-	exit 1
-fi
-
-sbctl sign -s "$img" 1>/dev/null
+#
+# We deliberately do NOT sign $img (the UKI in /efi/EFI/Linux/<ver>.efi)
+# here, because 95-zbm-install.install extracts vmlinuz/initramfs out of
+# that UKI to /boot, signs the extracted vmlinuz with sbctl, and deletes
+# the UKI. Signing it here would be wasted work — and worse, it would
+# track a path that 95 then immediately invalidates.
+exit 0

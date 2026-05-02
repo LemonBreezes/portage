@@ -1,0 +1,69 @@
+#!/bin/sh
+# After kernel-install (layout=uki) builds the UKI at
+# /efi/EFI/Linux/<ver>.efi, this hook:
+#   1. Extracts the embedded vmlinuz to /boot/vmlinuz-<ver>
+#      (on the ZFS root dataset, so snapshots include it).
+#   2. Extracts the embedded initramfs to /boot/initramfs-<ver>.img.
+#   3. sbctl-signs vmlinuz (signature #1, sbctl "Database Key" — for
+#      sbctl bookkeeping and `sbctl rotate-keys`).
+#   4. sbsigns vmlinuz a *second time* with the module-signing key
+#      ($MODULES_SIGN_KEY/$MODULES_SIGN_CERT) — this is the cert
+#      embedded in .builtin_trusted_keys at kernel-build time, so
+#      kexec_file_load under lockdown validates against it when
+#      CONFIG_KEXEC_SIG=y. PE/Authenticode supports multi-sig; sbsign
+#      appends rather than replacing.
+#   5. Regenerates ZBM (its post-hook signs the new ZBM UKI and mirrors
+#      it to /efi/EFI/BOOT/BOOTX64.EFI).
+#   6. Deletes the UKI from the ESP. ZBM is the ONE bootable EFI binary
+#      on the ESP; firmware FQ0001 would otherwise show every .efi as
+#      its own boot menu entry.
+ver=$1
+img=$2
+
+case "$img" in
+    */EFI/Linux/*.efi) ;;
+    *) exit 0 ;;
+esac
+[ -f "$img" ] || exit 0
+
+mkdir -p /boot
+vmlinuz=/boot/vmlinuz-${ver}
+initramfs=/boot/initramfs-${ver}.img
+
+objcopy -O binary --only-section=.linux  "$img" "${vmlinuz}.new"
+objcopy -O binary --only-section=.initrd "$img" "${initramfs}.new"
+
+sync
+mv -f "${vmlinuz}.new"  "$vmlinuz"
+mv -f "${initramfs}.new" "$initramfs"
+
+if command -v sbctl >/dev/null 2>&1 \
+   && [ "$(sbctl setup --print-state --json 2>/dev/null \
+           | awk '/installed/ { gsub(/,$/,"",$2); print $2 }')" = "true" ]; then
+    sbctl remove-file "$vmlinuz" >/dev/null 2>&1 || :
+    command -v sbattach >/dev/null 2>&1 \
+        && sbattach --remove "$vmlinuz" >/dev/null 2>&1 || :
+    sbctl sign -s "$vmlinuz" >/dev/null
+fi
+
+# Second signature with the module-signing key, so kexec_file_load
+# (CONFIG_KEXEC_SIG) finds a sig matching .builtin_trusted_keys.
+# Pulled via portageq so we honor make.conf, profile defaults, and any
+# /etc/portage/env overrides — and we don't try to source make.conf
+# directly (it has lines like `USYSTEM = "..."` with spaces around `=`
+# that bash interprets as command invocations).
+mod_key=$(portageq envvar MODULES_SIGN_KEY 2>/dev/null)
+mod_cert=$(portageq envvar MODULES_SIGN_CERT 2>/dev/null)
+if [ -n "$mod_key" ] && [ -n "$mod_cert" ] \
+   && [ -r "$mod_key" ] && [ -r "$mod_cert" ] \
+   && command -v sbsign >/dev/null 2>&1; then
+    sbsign --key "$mod_key" --cert "$mod_cert" \
+        --output "${vmlinuz}.modsig" "$vmlinuz" >/dev/null
+    mv -f "${vmlinuz}.modsig" "$vmlinuz"
+fi
+
+if command -v generate-zbm >/dev/null 2>&1; then
+    generate-zbm >/dev/null
+fi
+
+rm -f "$img"
