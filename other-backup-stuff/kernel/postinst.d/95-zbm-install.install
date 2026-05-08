@@ -4,17 +4,15 @@
 #   1. Extracts the embedded vmlinuz to /boot/vmlinuz-<ver>
 #      (on the ZFS root dataset, so snapshots include it).
 #   2. Extracts the embedded initramfs to /boot/initramfs-<ver>.img.
-#   3. sbctl-signs vmlinuz (signature #1, sbctl "Database Key" — for
-#      sbctl bookkeeping and `sbctl rotate-keys`).
-#   4. sbsigns vmlinuz a *second time* with the module-signing key
-#      ($MODULES_SIGN_KEY/$MODULES_SIGN_CERT) — this is the cert
+#   3. sbsigns vmlinuz with the module-signing key — this is the cert
 #      embedded in .builtin_trusted_keys at kernel-build time, so
 #      kexec_file_load under lockdown validates against it when
-#      CONFIG_KEXEC_SIG=y. PE/Authenticode supports multi-sig; sbsign
-#      appends rather than replacing.
-#   5. Regenerates ZBM (its post-hook signs the new ZBM UKI and mirrors
+#      CONFIG_KEXEC_SIG=y. Single signature, no sbctl: the kernel-side
+#      verifier only checks WIN_CERTIFICATE #1, and /boot/vmlinuz isn't
+#      directly EFI-booted (ZBM kexecs it) so an sbctl sig is unused.
+#   4. Regenerates ZBM (its post-hook signs the new ZBM UKI and mirrors
 #      it to /efi/EFI/BOOT/BOOTX64.EFI).
-#   6. Deletes the UKI from the ESP. ZBM is the ONE bootable EFI binary
+#   5. Deletes the UKI from the ESP. ZBM is the ONE bootable EFI binary
 #      on the ESP; firmware FQ0001 would otherwise show every .efi as
 #      its own boot menu entry.
 ver=$1
@@ -37,17 +35,17 @@ sync
 mv -f "${vmlinuz}.new"  "$vmlinuz"
 mv -f "${initramfs}.new" "$initramfs"
 
-if command -v sbctl >/dev/null 2>&1 \
-   && [ "$(sbctl setup --print-state --json 2>/dev/null \
-           | awk '/installed/ { gsub(/,$/,"",$2); print $2 }')" = "true" ]; then
-    sbctl remove-file "$vmlinuz" >/dev/null 2>&1 || :
-    command -v sbattach >/dev/null 2>&1 \
-        && sbattach --remove "$vmlinuz" >/dev/null 2>&1 || :
-    sbctl sign -s "$vmlinuz" >/dev/null
-fi
-
-# Second signature with the module-signing key, so kexec_file_load
-# (CONFIG_KEXEC_SIG) finds a sig matching .builtin_trusted_keys.
+# Sign vmlinuz with the module-signing key. This MUST be the only PE
+# signature on the file. CONFIG_KEXEC_BZIMAGE_VERIFY_SIG verifies only
+# WIN_CERTIFICATE #1 in the PE certificate table (see kernel
+# crypto/asymmetric_keys/verify_pefile.c: pefile_strip_sig_wrapper),
+# and that single sig must chain to .builtin_trusted_keys — which on
+# this kernel contains only $MODULES_SIGN_CERT (embedded via
+# CONFIG_MODULE_SIG_KEY by gentoo-kernel[modules-sign]).
+#
+# Do NOT also sbctl-sign /boot/vmlinuz: it's never directly EFI-booted
+# (ZBM kexecs into it), so an sbctl Secure Boot signature here is unused,
+# and if it lands in slot #1 it silently breaks kexec_file_load.
 # Pulled via portageq so we honor make.conf, profile defaults, and any
 # /etc/portage/env overrides — and we don't try to source make.conf
 # directly (it has lines like `USYSTEM = "..."` with spaces around `=`
@@ -57,6 +55,9 @@ mod_cert=$(portageq envvar MODULES_SIGN_CERT 2>/dev/null)
 if [ -n "$mod_key" ] && [ -n "$mod_cert" ] \
    && [ -r "$mod_key" ] && [ -r "$mod_cert" ] \
    && command -v sbsign >/dev/null 2>&1; then
+    # Strip any inherited PE sigs so signature ordering is deterministic.
+    command -v sbattach >/dev/null 2>&1 \
+        && sbattach --remove "$vmlinuz" >/dev/null 2>&1 || :
     sbsign --key "$mod_key" --cert "$mod_cert" \
         --output "${vmlinuz}.modsig" "$vmlinuz" >/dev/null
     mv -f "${vmlinuz}.modsig" "$vmlinuz"

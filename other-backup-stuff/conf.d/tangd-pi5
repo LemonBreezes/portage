@@ -1,0 +1,4 @@
+# Pi 5 NAS Tang. Bound to wired LAN IP (enp12s0).
+TANG_ADDR=192.168.12.123
+TANG_PORT=7500
+TANG_DIR=/var/db/tang
