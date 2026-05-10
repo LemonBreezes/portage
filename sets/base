@@ -19,6 +19,7 @@ app-editors/nano
 app-editors/vim
 app-emacs/ebuild-mode
 app-emacs/emacs-daemon
+app-emulation/vmware-workstation
 app-eselect/eselect-ld
 app-eselect/eselect-python
 app-eselect/eselect-repository
