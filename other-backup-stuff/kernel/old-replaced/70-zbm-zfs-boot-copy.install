@@ -1,0 +1,38 @@
+#!/bin/sh
+# Mirror vmlinuz + initramfs into the ZFS root's /boot so ZFSBootMenu can
+# discover and kexec them. The signed UKI on the ESP remains the primary
+# boot path; these copies live inside the dataset so snapshots capture
+# the matching kernel/initramfs pair for rollback.
+
+set -e
+
+ver=$1
+img=$2
+
+ZFS_BOOT=/boot
+
+# Only act when /boot is on ZFS (not a mounted ext4 partition on top).
+case "$(findmnt -no FSTYPE -T "$ZFS_BOOT" 2>/dev/null)" in
+	zfs) ;;
+	*) exit 0 ;;
+esac
+
+# Source vmlinuz: the dist-kernel symlink under /lib/modules/<ver>/vmlinuz
+# points at the bzImage and is stable across rebuilds.
+src_vmlinuz=/lib/modules/$ver/vmlinuz
+[ -f "$src_vmlinuz" ] || { echo "70-zbm: $src_vmlinuz not found" >&2; exit 0; }
+
+# Source initrd: preinst.d/52-dracut.install drops it in INSTALLKERNEL_STAGING_AREA.
+src_initrd=$INSTALLKERNEL_STAGING_AREA/initrd
+[ -f "$src_initrd" ] || { echo "70-zbm: no initrd in $INSTALLKERNEL_STAGING_AREA" >&2; exit 0; }
+
+dst_vmlinuz=$ZFS_BOOT/vmlinuz-$ver
+dst_initrd=$ZFS_BOOT/initramfs-$ver.img
+
+install -m 0644 "$src_vmlinuz" "$dst_vmlinuz.new"
+install -m 0600 "$src_initrd" "$dst_initrd.new"
+sync
+mv -f "$dst_vmlinuz.new" "$dst_vmlinuz"
+mv -f "$dst_initrd.new" "$dst_initrd"
+
+echo "70-zbm: installed $dst_vmlinuz + $dst_initrd"

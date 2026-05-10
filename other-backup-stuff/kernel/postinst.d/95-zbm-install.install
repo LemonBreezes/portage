@@ -28,8 +28,20 @@ mkdir -p /boot
 vmlinuz=/boot/vmlinuz-${ver}
 initramfs=/boot/initramfs-${ver}.img
 
-objcopy -O binary --only-section=.linux  "$img" "${vmlinuz}.new"
-objcopy -O binary --only-section=.initrd "$img" "${initramfs}.new"
+if ! objcopy -O binary --only-section=.linux  "$img" "${vmlinuz}.new"; then
+    rm -f "${vmlinuz}.new"
+    echo "95-zbm: objcopy .linux failed for $img" >&2
+    exit 1
+fi
+if ! objcopy -O binary --only-section=.initrd "$img" "${initramfs}.new"; then
+    rm -f "${vmlinuz}.new" "${initramfs}.new"
+    echo "95-zbm: objcopy .initrd failed for $img" >&2
+    exit 1
+fi
+[ -s "${vmlinuz}.new" ]  || { rm -f "${vmlinuz}.new" "${initramfs}.new"
+    echo "95-zbm: extracted vmlinuz is empty"  >&2; exit 1; }
+[ -s "${initramfs}.new" ] || { rm -f "${vmlinuz}.new" "${initramfs}.new"
+    echo "95-zbm: extracted initramfs is empty" >&2; exit 1; }
 
 sync
 mv -f "${vmlinuz}.new"  "$vmlinuz"
@@ -58,9 +70,19 @@ if [ -n "$mod_key" ] && [ -n "$mod_cert" ] \
     # Strip any inherited PE sigs so signature ordering is deterministic.
     command -v sbattach >/dev/null 2>&1 \
         && sbattach --remove "$vmlinuz" >/dev/null 2>&1 || :
-    sbsign --key "$mod_key" --cert "$mod_cert" \
-        --output "${vmlinuz}.modsig" "$vmlinuz" >/dev/null
+    if ! sbsign --key "$mod_key" --cert "$mod_cert" \
+            --output "${vmlinuz}.modsig" "$vmlinuz"; then
+        rm -f "${vmlinuz}.modsig"
+        echo "95-zbm: sbsign failed for $vmlinuz — leaving unsigned would" \
+             "brick kexec under CONFIG_KEXEC_SIG_FORCE=y" >&2
+        exit 1
+    fi
+    sync
     mv -f "${vmlinuz}.modsig" "$vmlinuz"
+else
+    echo "95-zbm: missing MODULES_SIGN_KEY/CERT or sbsign — refusing to" \
+         "leave $vmlinuz unsigned" >&2
+    exit 1
 fi
 
 if command -v generate-zbm >/dev/null 2>&1; then
