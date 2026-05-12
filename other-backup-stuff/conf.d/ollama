@@ -5,6 +5,12 @@
 # Bind to all interfaces so other LAN hosts can reach the API.
 export OLLAMA_HOST="0.0.0.0:11434"
 
+# Perf tuning for RTX 5090 (Blackwell)
+export OLLAMA_FLASH_ATTENTION=1
+export OLLAMA_KV_CACHE_TYPE=q8_0
+export OLLAMA_KEEP_ALIVE=24h
+export OLLAMA_NUM_PARALLEL=1
+
 # log to syslog
 # output_logger="logger -t \"$RC_SVCNAME\" -p daemon.info"
 # error_logger="logger -t \"$RC_SVCNAME\" -p daemon.err"
