@@ -19,7 +19,6 @@ app-editors/nano
 app-editors/vim
 app-emacs/ebuild-mode
 app-emacs/emacs-daemon
-app-emulation/vmware-workstation
 app-eselect/eselect-ld
 app-eselect/eselect-python
 app-eselect/eselect-repository
@@ -27,7 +26,6 @@ app-misc/dtach
 app-misc/geoclue
 app-misc/jq
 app-misc/tmux
-app-office/libreoffice
 app-portage/cpuid2cpuflags
 app-portage/eix
 app-portage/genlop
@@ -43,7 +41,6 @@ app-shells/zoxide
 app-shells/zsh
 app-text/dos2unix
 app-text/editorconfig-core-c
-app-text/evince
 app-text/htmltidy
 app-text/pandoc-bin
 app-text/poppler
@@ -53,15 +50,13 @@ app-text/tree
 dev-build/automake
 dev-build/cmake
 dev-build/libtool
-dev-db/freetds
-dev-db/unixODBC
 dev-debug/cgdb
 dev-debug/gdb
 dev-debug/strace
 dev-lang/go
 dev-lang/python
 dev-lang/rust-bin
-dev-libs/boost
+dev-lang/zig-bin
 dev-libs/libvterm
 dev-python/beautifulsoup4
 dev-python/uv
@@ -88,10 +83,8 @@ dev-util/tokei
 dev-util/vulkan-tools
 dev-vcs/git
 dev-vcs/git-lfs
-games-engines/love
 games-misc/cowsay
 gnome-base/librsvg
-gnome-extra/nm-applet
 llvm-core/clang
 llvm-core/llvm
 media-fonts/dejavu
@@ -104,7 +97,6 @@ media-fonts/noto-emoji
 media-fonts/quivira
 media-fonts/ttf-ancient-fonts
 media-fonts/victor-mono
-media-gfx/flameshot
 media-gfx/imagemagick
 media-gfx/scrot
 media-libs/exiftool
@@ -123,14 +115,12 @@ media-sound/pavucontrol
 media-sound/playerctl
 media-video/ffmpeg
 media-video/mpv
-media-video/obs-studio
 net-analyzer/netcat
 net-libs/libssh
 net-libs/nodejs
 net-mail/isync
 net-mail/mu
 net-misc/yt-dlp
-net-p2p/qbittorrent
 net-p2p/syncthing
 net-print/cups-filters
 net-print/cups-meta
@@ -148,7 +138,6 @@ sys-apps/plocate
 sys-apps/ripgrep-all
 sys-apps/sysvinit
 sys-auth/rtkit
-sys-block/gparted
 sys-block/io-scheduler-udev-rules
 sys-devel/binutils
 sys-devel/gcc
@@ -171,8 +160,6 @@ sys-process/htop
 sys-process/iotop
 sys-process/lsof
 www-client/elinks
-www-client/firefox-bin
-www-client/librewolf-bin
 www-client/surfraw
 www-client/w3m
 x11-apps/mesa-progs

@@ -7,9 +7,8 @@ dev-java/icedtea
 dev-java/openjdk
 www-client/firefox
 dev-lang/rust
-
-# Compile these from source instead.
-app-office/libreoffice-bin
+dev-lang/zig
+app-office/libreoffice
 
 # Some overlay package versions do not build.
 dev-lang/python::pg_overlay
