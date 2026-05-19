@@ -108,6 +108,7 @@ media-gfx/flameshot
 media-gfx/imagemagick
 media-gfx/scrot
 media-libs/exiftool
+media-libs/libsixel
 media-libs/mesa
 media-libs/portaudio
 media-libs/vulkan-layers
