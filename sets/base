@@ -121,6 +121,7 @@ net-libs/nodejs
 net-mail/isync
 net-mail/mu
 net-misc/networkmanager
+net-misc/openssh
 net-misc/yt-dlp
 net-p2p/syncthing
 net-print/cups-filters
