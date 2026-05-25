@@ -1,0 +1,24 @@
+module open-webui-local 1.0;
+
+# Container runtime quirk on this host:
+# docker's containerd overlayfs snapshotter does not relabel the writable
+# upper layer to container_file_t; image content (and copy-up writes)
+# stay labeled container_ro_file_t. Open WebUI rewrites a few static
+# files at startup (PWA manifest, icons) and Python writes __pycache__
+# into site-packages -- both hit container_ro_file_t.
+#
+# These rules give container_t enough write access to run images whose
+# storage stays mislabeled. They do not weaken MCS isolation between
+# containers: each container still carries its own s0:cN,cM pair, and
+# overlayfs upper-dir writes inherit those categories, so a container
+# can only touch its own copy-up files.
+
+require {
+	type container_t;
+	type container_ro_file_t;
+	class dir  { add_name create remove_name write };
+	class file { create entrypoint rename unlink write };
+}
+
+allow container_t container_ro_file_t:dir  { add_name create remove_name write };
+allow container_t container_ro_file_t:file { create entrypoint rename unlink write };

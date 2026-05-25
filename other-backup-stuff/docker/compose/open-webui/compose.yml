@@ -1,0 +1,37 @@
+services:
+  open-webui:
+    image: ghcr.io/open-webui/open-webui:main
+    container_name: open-webui
+    network_mode: host
+    restart: always
+    security_opt:
+      - no-new-privileges:true
+      - label=type:container_t
+    cap_drop:
+      - ALL
+    read_only: false
+    tmpfs:
+      - /tmp:size=512m,mode=1777
+    environment:
+      HOST: "100.108.11.55"
+      PORT: "8080"
+      WEBUI_AUTH: "False"
+      ENABLE_SIGNUP: "False"
+      WEBUI_SECRET_KEY: "EDcQV0J95VvH3ynG"
+      OLLAMA_BASE_URL: "http://localhost:11434"
+      OLLAMA_BASE_URLS: "http://localhost:11434"
+      SCARF_NO_ANALYTICS: "true"
+      DO_NOT_TRACK: "true"
+      ANONYMIZED_TELEMETRY: "false"
+    volumes:
+      - open-webui:/app/backend/data:Z
+    healthcheck:
+      test: ["CMD-SHELL", "curl -fs http://$${HOST:-localhost}:$${PORT:-8080}/health >/dev/null || exit 1"]
+      interval: 30s
+      timeout: 5s
+      retries: 3
+      start_period: 30s
+
+volumes:
+  open-webui:
+    external: true
