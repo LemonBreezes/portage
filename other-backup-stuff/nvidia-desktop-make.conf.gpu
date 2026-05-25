@@ -9,8 +9,9 @@ VIDEO_CARDS="nvidia"
 UGPU="nvidia vdpau nvenc vulkan opengl cuda"
 
 # CUDA toolchain (nvidia-only; remove on systems without CUDA).
-CUDAHOSTCXX="/usr/x86_64-pc-linux-gnu/gcc-bin/12"
-NVCC_PREPEND_FLAGS="--compiler-bindir /usr/x86_64-pc-linux-gnu/gcc-bin/12"
+# CUDA 12.9 supports gcc up to 14; gcc-16 is too new for nvcc.
+CUDAHOSTCXX="/usr/x86_64-pc-linux-gnu/gcc-bin/14"
+NVCC_PREPEND_FLAGS="--compiler-bindir /usr/x86_64-pc-linux-gnu/gcc-bin/14"
 CUDA_ARCH="sm_120"
 CUDA_ARCH_BIN="12.0"
 CUDA_GENERATION="Blackwell"

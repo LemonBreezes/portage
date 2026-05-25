@@ -5,6 +5,9 @@
 # Bind to all interfaces so other LAN hosts can reach the API.
 export OLLAMA_HOST="0.0.0.0:11434"
 
+# Disable any phone-home / cloud features; cloud use must be an explicit tool call.
+export OLLAMA_NO_CLOUD=1
+
 # Perf tuning for RTX 5090 (Blackwell)
 export OLLAMA_FLASH_ATTENTION=1
 export OLLAMA_KV_CACHE_TYPE=q8_0
