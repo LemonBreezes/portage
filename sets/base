@@ -80,6 +80,7 @@ dev-debug/rr
 dev-util/sh
 dev-util/shellcheck-bin
 dev-util/tokei
+dev-util/vmtouch
 dev-util/vulkan-tools
 dev-vcs/git
 dev-vcs/git-lfs
@@ -178,6 +179,7 @@ x11-misc/polybar
 x11-misc/pywal
 x11-misc/redshift
 x11-misc/rofi
+x11-misc/warpd
 x11-misc/xclip
 x11-misc/xsel
 x11-misc/xvfb-run
