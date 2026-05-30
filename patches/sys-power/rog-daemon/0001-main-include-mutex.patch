@@ -1,0 +1,14 @@
+Add missing <mutex> include — gcc 16 stopped pulling it in transitively
+through <iostream>/<thread>, so std::mutex in main.cpp now fails to
+resolve.
+
+--- a/src/main.cpp
++++ b/src/main.cpp
+@@ -1,6 +1,7 @@
+ #include <iostream>
+ #include <vector>
+ #include <filesystem>
++#include <mutex>
+ #include <thread>
+ #include <unistd.h>
+ #include <sys/types.h>

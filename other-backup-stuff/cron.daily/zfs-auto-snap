@@ -4,7 +4,7 @@
 # on machines without zfs or without the dataset.
 set -eu
 
-DATASET=rpool/ROOT/default
+DATASET=rpool/ROOT/gentoo
 TAG=daily
 KEEP=14
 

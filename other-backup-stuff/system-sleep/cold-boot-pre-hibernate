@@ -1,0 +1,51 @@
+#!/bin/sh
+# elogind/systemd system-sleep hook invoked as: $1=pre|post  $2=sleep-action
+# (suspend | hibernate | hybrid-sleep | suspend-then-hibernate).
+#
+# Cold-boot mitigation for the hibernate path. Hibernate bypasses the
+# OpenRC shutdown runlevel entirely — the kernel writes the resume
+# image to /dev/mapper/swap, then calls pm_power_off() with userspace
+# still frozen. So we have no chance to zero anything BETWEEN snapshot
+# and halt. What we CAN do is run actions BEFORE the kernel takes the
+# snapshot, which is what this hook does.
+#
+# Deliberately NOT done here (would break resume):
+#   - zfs unload-key       — snapshot would capture the unloaded state;
+#                            on resume the kernel can't reach rpool/ROOT.
+#   - swapoff / close swap — swap is the target the snapshot writes to.
+#   - cryptsetup close home — fine to do, but elogind's normal pre-sleep
+#                            path doesn't unmount /home; leaving it alone.
+#
+# What this DOES do:
+#   - Set the TCG MOR EFI variable so firmware scrubs DRAM during POST
+#     on the next power-on. This works regardless of whether the attacker
+#     immediately grabs the laptop or waits — the DRAM gets overwritten
+#     before any OS code (including the resume kernel) sees it. The
+#     resume image is read from disk into the freshly-wiped DRAM, so
+#     resume correctness is preserved.
+#   - Drop page/dentry/slab caches. With init_on_free=1 on the cmdline
+#     every freed page is zeroed as it returns to the buddy allocator.
+#     The snapshot taken right after is smaller and contains fewer
+#     stale-data pages.
+
+case "$1/$2" in
+    pre/hibernate|pre/hybrid-sleep|pre/suspend-then-hibernate)
+        ;;
+    *)
+        exit 0
+        ;;
+esac
+
+MOR_VAR="/sys/firmware/efi/efivars/MemoryOverwriteRequestControl-e20939be-32d4-41be-a150-897f85d49829"
+
+sync
+echo 3 > /proc/sys/vm/drop_caches 2>/dev/null
+
+if [ -e "$MOR_VAR" ]; then
+    chattr -i "$MOR_VAR" 2>/dev/null
+    # NV|BS|RT (0x07) attributes + 1 data byte (bit0 = clear memory)
+    printf '\x07\x00\x00\x00\x01' > "$MOR_VAR" 2>/dev/null
+    chattr +i "$MOR_VAR" 2>/dev/null
+fi
+
+exit 0

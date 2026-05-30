@@ -1,0 +1,76 @@
+#!/sbin/openrc-run
+# Cold-boot mitigation: zero what we can before halt, then ask firmware
+# to scrub DRAM on the next power-on.
+#
+# Steps, in shutdown order:
+#   1. zfs unload-key -a       — best effort; succeeds for any encrypted
+#                                dataset whose users are unmounted. Fails
+#                                for rpool (root is still mounted), and
+#                                there is no clean way to unload the root
+#                                pool's key in userspace without pivoting
+#                                to a tmpfs shutdown image. Accept that the
+#                                rpool key sits in zfs.ko memory until halt.
+#   2. swapoff + cryptsetup close swap
+#                              — only fires on reboot/poweroff (hibernate
+#                                bypasses the OpenRC shutdown runlevel
+#                                entirely, since the kernel halts directly
+#                                after writing the resume image). Closing
+#                                the LUKS swap container makes dm-crypt
+#                                wipe its in-kernel master key.
+#   3. drop_caches             — releases page cache, dentries, inodes,
+#                                slab. With init_on_free=1 (in cmdline)
+#                                the kernel zeros every page as it's
+#                                returned to the buddy allocator, so this
+#                                effectively memzeros all cache memory.
+#   4. TCG MOR EFI variable    — instructs UEFI firmware to overwrite DRAM
+#                                on the next boot, regardless of whether
+#                                an attacker chills the DIMMs. See TCG
+#                                Platform Reset Attack Mitigation Spec.
+
+description="Zero keys, evict caches, request UEFI memory wipe on next boot"
+
+MOR_VAR="/sys/firmware/efi/efivars/MemoryOverwriteRequestControl-e20939be-32d4-41be-a150-897f85d49829"
+
+depend() {
+	after killprocs
+	before mount-ro savecache
+}
+
+start() {
+	# 1. ZFS keys — best effort. The root pool's key cannot be unloaded
+	# while / is mounted; that's expected and not fatal.
+	ebegin "Unloading ZFS encryption keys (best effort)"
+	zfs unload-key -a 2>/dev/null
+	eend 0
+
+	# 2. Encrypted swap — only relevant for non-hibernate shutdowns.
+	if swapon --show=NAME --noheadings 2>/dev/null | grep -qx "/dev/mapper/swap"; then
+		ebegin "Disabling encrypted swap and closing LUKS container"
+		swapoff /dev/mapper/swap 2>/dev/null
+		cryptsetup close swap 2>/dev/null
+		eend 0
+	fi
+
+	# 3. Caches — init_on_free=1 means freed pages are zeroed.
+	ebegin "Evicting page cache and slab caches"
+	sync
+	echo 3 > /proc/sys/vm/drop_caches 2>/dev/null
+	eend 0
+
+	# 4. UEFI MOR — firmware-level DRAM wipe on next power-on.
+	ebegin "Requesting UEFI memory overwrite on next boot (MOR)"
+	if [ ! -e "$MOR_VAR" ]; then
+		eend 1 "MOR EFI variable not present"
+		return 1
+	fi
+	chattr -i "$MOR_VAR" 2>/dev/null
+	# 4-byte EFI attributes (NV|BS|RT = 0x07) + 1 data byte (bit0 = wipe)
+	printf '\x07\x00\x00\x00\x01' > "$MOR_VAR"
+	local rc=$?
+	chattr +i "$MOR_VAR" 2>/dev/null
+	eend $rc
+}
+
+stop() {
+	return 0
+}

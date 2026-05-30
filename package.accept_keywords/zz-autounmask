@@ -1,0 +1,8 @@
+# Autounmask-style keyword acceptances added by Claude.
+# Promote permanent ones to main.conf manually.
+
+# sched_ext userspace schedulers + DBUS loader (only ~amd64 in the tree).
+# Pulls scx-loader via PDEPEND. Requires CONFIG_SCHED_CLASS_EXT=y, set in
+# /etc/kernel/config.d/30-latency-scx.config.
+sys-kernel/scx ~amd64
+sys-kernel/scx-loader ~amd64

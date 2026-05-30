@@ -1,3 +1,4 @@
+app-admin/sudo
 app-admin/sysklogd
 app-arch/dpkg
 app-arch/lzop
@@ -166,7 +167,9 @@ www-client/elinks
 www-client/surfraw
 www-client/w3m
 x11-apps/mesa-progs
+x11-apps/xhost
 x11-apps/xinit
+x11-apps/xinput
 x11-apps/xrandr
 x11-apps/xwininfo
 x11-apps/setxkbmap
@@ -175,6 +178,7 @@ x11-misc/dmenu
 x11-misc/dunst
 x11-misc/i3lock
 x11-misc/i3status
+x11-misc/picom
 x11-misc/polybar
 x11-misc/pywal
 x11-misc/redshift
