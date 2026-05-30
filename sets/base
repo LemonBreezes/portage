@@ -137,6 +137,7 @@ sys-apps/dmidecode
 sys-apps/fd
 sys-apps/inxi
 sys-apps/lshw
+sys-apps/nix
 sys-apps/openrc
 sys-apps/plocate
 sys-apps/ripgrep-all
