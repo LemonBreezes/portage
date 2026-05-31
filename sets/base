@@ -26,6 +26,7 @@ app-eselect/eselect-repository
 app-misc/dtach
 app-misc/geoclue
 app-misc/jq
+app-misc/keyd
 app-misc/tmux
 app-portage/cpuid2cpuflags
 app-portage/eix
