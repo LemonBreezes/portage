@@ -1,0 +1,6 @@
+# compiled SELinux module artifacts — rebuild from selinux_local.te with:
+#   checkmodule -M -m -o selinux_local.mod selinux_local.te
+#   semodule_package -o selinux_local.pp -m selinux_local.mod
+#   semodule -i selinux_local.pp
+*.mod
+*.pp

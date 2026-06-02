@@ -54,6 +54,7 @@ dev-build/cmake
 dev-build/libtool
 dev-debug/cgdb
 dev-debug/gdb
+dev-debug/rr
 dev-debug/strace
 dev-lang/go
 dev-lang/python
@@ -61,7 +62,6 @@ dev-lang/rust-bin
 dev-lang/zig-bin
 dev-libs/libvterm
 dev-python/beautifulsoup4
-dev-python/uv
 dev-python/black
 dev-python/isort
 dev-python/nose2
@@ -71,6 +71,7 @@ dev-python/pyflakes
 dev-python/pygame
 dev-python/pytest
 dev-python/tqdm
+dev-python/uv
 dev-util/bear
 dev-util/ccache
 dev-util/debugedit
@@ -78,7 +79,6 @@ dev-util/difftastic
 dev-util/dwdiff
 dev-util/github-cli
 dev-util/lua-language-server
-dev-debug/rr
 dev-util/sh
 dev-util/shellcheck-bin
 dev-util/tokei
@@ -169,12 +169,12 @@ www-client/elinks
 www-client/surfraw
 www-client/w3m
 x11-apps/mesa-progs
+x11-apps/setxkbmap
 x11-apps/xhost
 x11-apps/xinit
 x11-apps/xinput
 x11-apps/xrandr
 x11-apps/xwininfo
-x11-apps/setxkbmap
 x11-base/xorg-server
 x11-misc/dmenu
 x11-misc/dunst
@@ -191,3 +191,5 @@ x11-misc/xsel
 x11-misc/xvfb-run
 x11-terms/kitty
 x11-wm/ratpoison
+x11-wm/stumpwm
+x11-wm/stumpwm-contrib

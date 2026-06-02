@@ -1,0 +1,199 @@
+module selinux_local 1.1;
+
+# Local SELinux policy for the ASUS ROG laptop (mcs policy).
+# Allows captured in permissive mode that are needed before switching to
+# enforcing. Grouped by purpose. Regenerate denials with:
+#   ausearch -m avc -ts recent | audit2allow
+#
+# NOT included here (handled separately):
+#  - sshd/sysctl/cron reads of /etc/portage  -> fixed via semanage fcontext
+#  - unconfined_t execmem (emacs/stumpwm/librewolf) -> boolean allow_execmem
+#  - semanage_t/setfiles_t/load_policy_t relabel ops -> admin-tool artifacts
+
+require {
+	type init_t;
+	type initrc_t;
+	type sshd_t;
+	type systemd_tmpfiles_t;
+	type auditd_log_t;
+	type portage_conf_t;
+	type nsfs_t;
+	type bootloader_t;
+	type cert_t;
+	type default_t;
+	type xdg_config_t;
+	type sysctl_vm_overcommit_t;
+	type gcc_config_t;
+	type bin_t;
+	type initrc_exec_t;
+	type initrc_state_t;
+	type local_login_t;
+	type system_cronjob_tmp_t;
+	type logrotate_t;
+	type user_tmp_t;
+	type lvm_t;
+	type NetworkManager_t;
+	type system_dbusd_t;
+	type mount_t;
+	type node_t;
+	type portage_t;
+	type sysfs_t;
+	type udev_runtime_t;
+	type power_profilesd_t;
+	type systemd_logind_t;
+	type systemd_logind_inhibit_runtime_t;
+	type rtkit_daemon_t;
+	type usr_t;
+	type run_init_t;
+	type cgroup_t;
+	type kmod_tmpfiles_conf_t;
+	type tmpfiles_conf_t;
+	type system_cronjob_t;
+	type zfs_exec_t;
+	type chkpwd_t;
+	type chkpwd_exec_t;
+	type system_mail_t;
+	type initrc_runtime_t;
+	type sysctl_kernel_t;
+	type tmpfiles_t;
+	type irqbalance_t;
+	type unlabeled_t;
+	type udev_t;
+	type etc_runtime_t;
+	type xauth_t;
+	type console_device_t;
+	type initrc_devpts_t;
+	type zfs_t;
+	class file { append create entrypoint execute getattr ioctl link lock open read rename setattr unlink write };
+	class chr_file { ioctl open read write };
+	class process { signal transition sigchld };
+	class fd use;
+	class filesystem getattr;
+	class dir { add_name create getattr open read remove_name search watch write };
+	class capability { dac_read_search net_admin sys_admin sys_resource };
+	class lnk_file { create read };
+	class fifo_file { getattr ioctl read write };
+	class udp_socket node_bind;
+	class tcp_socket node_bind;
+}
+
+#============= bootloader_t (grub-mkconfig probing init) ==============
+allow bootloader_t init_t:dir search;
+allow bootloader_t init_t:file { getattr ioctl open read };
+allow bootloader_t nsfs_t:file getattr;
+
+#============= gcc_config_t (gcc-config reading certs/xdg/sysctl) ==============
+allow gcc_config_t cert_t:file { getattr open read };
+allow gcc_config_t default_t:file { getattr ioctl open read };
+allow gcc_config_t self:capability dac_read_search;
+allow gcc_config_t sysctl_vm_overcommit_t:file { open read };
+allow gcc_config_t xdg_config_t:file { getattr open read };
+allow gcc_config_t xdg_config_t:lnk_file read;
+
+#============= local_login_t (console login session setup) ==============
+allow local_login_t bin_t:file execute;
+allow local_login_t initrc_exec_t:file execute;
+allow local_login_t initrc_state_t:dir { add_name create getattr open read remove_name search write };
+allow local_login_t initrc_state_t:file { create getattr lock open unlink write };
+allow local_login_t initrc_state_t:lnk_file { create read };
+
+#============= logrotate_t ==============
+allow logrotate_t system_cronjob_tmp_t:file { read write };
+
+#============= lvm_t ==============
+allow lvm_t user_tmp_t:file append;
+
+#============= mount_t (inherits fds from NM/dbus) ==============
+allow mount_t NetworkManager_t:fd use;
+allow mount_t system_dbusd_t:fd use;
+
+#============= portage_t (rsync/distfile binding) ==============
+allow portage_t node_t:tcp_socket node_bind;
+allow portage_t node_t:udp_socket node_bind;
+
+#============= power_profilesd_t (power management) ==============
+allow power_profilesd_t self:capability net_admin;
+allow power_profilesd_t sysfs_t:dir watch;
+allow power_profilesd_t udev_runtime_t:file { getattr open read };
+
+#============= rtkit_daemon_t ==============
+allow rtkit_daemon_t systemd_logind_inhibit_runtime_t:fifo_file write;
+allow rtkit_daemon_t systemd_logind_t:fd use;
+
+#============= run_init_t ==============
+allow run_init_t usr_t:file { getattr open read };
+
+#============= system_cronjob_t ==============
+allow system_cronjob_t cgroup_t:file { open read };
+allow system_cronjob_t kmod_tmpfiles_conf_t:file { ioctl open read };
+allow system_cronjob_t tmpfiles_conf_t:file { ioctl open read };
+allow system_cronjob_t xdg_config_t:file { open read write };
+
+# zfs-auto-snap cron job: transition into zfs_t (allowed to touch /dev/zfs)
+# instead of accessing the storage device as system_cronjob_t (neverallow).
+type_transition system_cronjob_t zfs_exec_t:process zfs_t;
+allow system_cronjob_t zfs_t:process transition;
+allow zfs_t zfs_exec_t:file entrypoint;
+allow zfs_t system_cronjob_t:fd use;
+allow zfs_t system_cronjob_t:fifo_file { getattr ioctl read write };
+allow zfs_t system_cronjob_t:process sigchld;
+
+# unix_chkpwd in a cron PAM session: transition into chkpwd_t (allowed to read
+# shadow) instead of reading /etc/shadow as system_cronjob_t (neverallow).
+type_transition system_cronjob_t chkpwd_exec_t:process chkpwd_t;
+allow system_cronjob_t chkpwd_t:process transition;
+allow chkpwd_t chkpwd_exec_t:file entrypoint;
+allow chkpwd_t system_cronjob_t:fd use;
+allow chkpwd_t system_cronjob_t:fifo_file { getattr ioctl read write };
+allow chkpwd_t system_cronjob_t:process sigchld;
+
+#============= system_mail_t (nullmailer queue) ==============
+allow system_mail_t self:capability dac_read_search;
+
+#============= systemd_logind_t ==============
+allow systemd_logind_t initrc_runtime_t:file write;
+
+#============= tmpfiles_t ==============
+allow tmpfiles_t sysctl_kernel_t:dir search;
+# checkpath reads /proc/sys/kernel/cap_last_cap when setting up tmpfiles
+allow tmpfiles_t sysctl_kernel_t:file { getattr open read };
+
+#============= udev_t ==============
+allow udev_t irqbalance_t:process signal;
+allow udev_t sysfs_t:file setattr;
+allow udev_t unlabeled_t:filesystem getattr;
+# 90-irqbalance.rules runs "killall -SIGHUP irqbalance" at boot; early on the
+# target is still labeled initrc_t before it transitions to irqbalance_t.
+allow udev_t initrc_t:process signal;
+# systemd-sysctl (runs as udev_t) reads sysctl.d/*.conf symlinked into the
+# backup tree; traverse the portage_conf_t parent dirs to reach the etc_t leaves.
+allow udev_t portage_conf_t:dir { getattr search };
+
+#============= xauth_t (X authority files in /root, which lacks a home type) ==============
+allow xauth_t default_t:dir { add_name remove_name search write };
+allow xauth_t default_t:file { create getattr link open read rename unlink write };
+allow xauth_t etc_runtime_t:file { getattr open read };
+allow xauth_t user_tmp_t:file { unlink write };
+
+#============= zfs_t (zfs mount/share writing to console at boot) ==============
+allow zfs_t console_device_t:chr_file { read write };
+allow zfs_t init_t:fd use;
+allow zfs_t initrc_devpts_t:chr_file { read write };
+
+#============= sshd_t (config symlinked into the backup tree) ==============
+# /etc/ssh/sshd_config.d/10-latency.conf -> .../other-backup-stuff/ssh/...
+# Leaf is etc_t (via fcontext); traverse the portage_conf_t parent dirs.
+allow sshd_t portage_conf_t:dir search;
+
+#============= systemd_tmpfiles_t (systemd-tmpfiles-setup at boot) ==============
+# nix-daemon.conf (/nix, default_t) and eix.conf (/var/cache/eix, portage_cache_t)
+# are covered by the systemd_tmpfiles_manage_all boolean (set via setsebool -P).
+# audit.conf touches /var/log/audit, whose auditd_log_t is a security file type
+# excluded from that boolean, so allow the stat of the existing dir explicitly.
+allow systemd_tmpfiles_t self:capability sys_resource;
+allow systemd_tmpfiles_t auditd_log_t:dir { getattr search };
+
+#============= NetworkManager_t ==============
+# NM probes for CAP_SYS_ADMIN it does not need here (works fine without it);
+# silence the boot-time denials rather than granting the capability.
+dontaudit NetworkManager_t self:capability sys_admin;
