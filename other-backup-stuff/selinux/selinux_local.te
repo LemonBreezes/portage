@@ -1,4 +1,4 @@
-module selinux_local 1.1;
+module selinux_local 1.3;
 
 # Local SELinux policy for the ASUS ROG laptop (mcs policy).
 # Allows captured in permissive mode that are needed before switching to
@@ -64,14 +64,20 @@ require {
 	type console_device_t;
 	type initrc_devpts_t;
 	type zfs_t;
-	class file { append create entrypoint execute getattr ioctl link lock open read rename setattr unlink write };
-	class chr_file { ioctl open read write };
+	type kmod_t;
+	type portage_tmp_t;
+	type portage_devpts_t;
+	type modules_object_t;
+	type modules_dep_t;
+	type rpm_var_lib_t;
+	class file { append create entrypoint execute getattr ioctl link lock map open read rename setattr unlink write };
+	class chr_file { create getattr ioctl open read write };
 	class process { signal transition sigchld };
 	class fd use;
 	class filesystem getattr;
 	class dir { add_name create getattr open read remove_name search watch write };
 	class capability { dac_read_search net_admin sys_admin sys_resource };
-	class lnk_file { create read };
+	class lnk_file { create getattr read };
 	class fifo_file { getattr ioctl read write };
 	class udp_socket node_bind;
 	class tcp_socket node_bind;
@@ -192,6 +198,37 @@ allow sshd_t portage_conf_t:dir search;
 # excluded from that boolean, so allow the stat of the existing dir explicitly.
 allow systemd_tmpfiles_t self:capability sys_resource;
 allow systemd_tmpfiles_t auditd_log_t:dir { getattr search };
+
+#============= portage_t (postinst: dist-kernel dracut, rpmdb, dotnet) ==============
+# dist-kernel initramfs regen (sys-fs/zfs, sys-fs/zfs-kmod, sys-kernel/linux-firmware
+# postinst): dracut-install uses libkmod to mmap the .ko files and the modules.dep
+# index to read modinfo. Without map it fails with "could not get modinfo" /
+# "index_mm_open: mmap ... Permission denied", and depmod -a then dies.
+allow portage_t modules_object_t:file map;
+allow portage_t modules_dep_t:file map;
+# app-arch/rpm postinst runs `rpmdb --rebuilddb`; sqlite mmaps rpmdb.sqlite-shm.
+# Without map sqlite reports "disk I/O error" and the rebuild dies.
+allow portage_t rpm_var_lib_t:file map;
+# dotnet-pkg.eclass builds (app-shells/pwsh, dev-dotnet/csharp-gentoodotnetinfo)
+# exec /opt/dotnet-sdk-bin-10.0/dotnet, which is labeled usr_t (default for /opt).
+# portage_t already has map+execmem on usr_t (so JIT works once it starts) but was
+# missing plain execute on the host binary and its native coreclr .so libraries.
+allow portage_t usr_t:file execute;
+# dracut populates a minimal /dev in the initramfs staging tree with mknod
+# (null, kmsg, console, random, urandom). The staging tree is portage_tmp_t.
+allow portage_t portage_tmp_t:chr_file { create getattr };
+
+#============= kmod_t (depmod during in-portage dracut runs) ==============
+# When dracut regenerates the initramfs inside the ebuild postinst, depmod -a is
+# run against the staging tree under /var/tmp/portage (portage_tmp_t) with its
+# stdio on the build pty (portage_devpts_t). depmod runs as kmod_t and effectively
+# manages a full modules tree there: opendir + read the lib/modules dir, follow
+# the initramfs `lib` symlink, stat/read/mmap each staged .ko, and write the
+# generated modules.dep/.alias/.symbols indexes (plus its depmod.log).
+allow kmod_t portage_tmp_t:dir { search read open getattr add_name remove_name write };
+allow kmod_t portage_tmp_t:lnk_file { read getattr };
+allow kmod_t portage_tmp_t:file { append create getattr ioctl link lock map open read rename setattr unlink write };
+allow kmod_t portage_devpts_t:chr_file { read write };
 
 #============= NetworkManager_t ==============
 # NM probes for CAP_SYS_ADMIN it does not need here (works fine without it);
