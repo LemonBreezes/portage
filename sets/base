@@ -82,7 +82,6 @@ dev-util/lua-language-server
 dev-util/sh
 dev-util/shellcheck-bin
 dev-util/tokei
-dev-util/vmtouch
 dev-util/vulkan-tools
 dev-vcs/git
 dev-vcs/git-lfs

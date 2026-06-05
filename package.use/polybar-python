@@ -1,0 +1,10 @@
+# polybar-3.7.2 does not yet support python3_14 (the current profile default).
+# Pin it to python3_13 until upstream/the ebuild gains 3.14 support, then
+# delete this file. This is a per-package override only — it does not affect
+# the system-wide PYTHON_SINGLE_TARGET.
+x11-misc/polybar PYTHON_SINGLE_TARGET: -* python3_13
+
+# polybar needs xcb-proto built for python3_13, while libxcb/xcb-util need it
+# for the profile-default python3_14. xcb-proto is a multi-target package, so
+# enable both. Remove once polybar supports python3_14 (delete this whole file).
+x11-base/xcb-proto PYTHON_TARGETS: python3_13
