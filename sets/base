@@ -125,6 +125,7 @@ net-mail/mu
 net-misc/networkmanager
 net-misc/openssh
 net-misc/yt-dlp
+net-p2p/rtorrent
 net-p2p/syncthing
 net-print/cups-filters
 net-print/cups-meta
