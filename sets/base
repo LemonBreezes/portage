@@ -143,6 +143,7 @@ sys-apps/openrc
 sys-apps/plocate
 sys-apps/ripgrep-all
 sys-apps/sysvinit
+sys-auth/nss-mdns
 sys-auth/rtkit
 sys-block/io-scheduler-udev-rules
 sys-devel/binutils
