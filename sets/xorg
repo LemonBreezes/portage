@@ -1,0 +1,32 @@
+# Packages that only function under an Xorg (X11) session: the X server,
+# X-only window managers/bars/launchers, and X11-specific utilities.
+# Nothing here is needed on a pure Wayland session.
+# Install with: emerge -avn @xorg
+
+# X server + session bring-up
+x11-base/xorg-server
+x11-apps/xinit
+x11-apps/xhost
+x11-apps/setxkbmap
+x11-apps/xinput
+x11-apps/xrandr
+x11-apps/xwininfo
+x11-misc/xvfb-run
+
+# Window managers
+x11-wm/ratpoison
+x11-wm/stumpwm
+x11-wm/stumpwm-contrib
+
+# Compositor, bars, launchers, screen locker
+x11-misc/picom
+x11-misc/polybar
+x11-misc/dmenu
+x11-misc/rofi
+x11-misc/i3lock
+
+# Clipboard, input automation, screenshots
+x11-misc/xclip
+x11-misc/xsel
+x11-misc/xdotool
+media-gfx/scrot
