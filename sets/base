@@ -2,7 +2,6 @@ app-admin/sudo
 app-admin/sysklogd
 app-arch/dpkg
 app-arch/lzop
-app-arch/p7zip
 app-arch/pbzip2
 app-arch/pigz
 app-arch/plzip
