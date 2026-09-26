@@ -1,0 +1,17 @@
+# Wayland backend required by Tor Browser / Mozilla Firefox libxul
+# (libxul references gdk_wayland_* symbols at load even under X11)
+x11-libs/gtk+ wayland
+media-libs/mesa wayland
+
+# emerge: there are no ebuilds built with USE flags to satisfy "~dev-qt/qtbase-6.11.2:6[accessibility=,gui,network=,opengl=,sql?,ssl?,vulkan=,wayland=,widgets=]".
+# !!! One of the following packages is required to complete your request:
+# - dev-qt/qtbase-6.11.2-r2::gentoo (Change USE: -wayland)
+# - dev-qt/qtdeclarative-6.11.2-r1::gentoo (Change USE: +wayland)
+# (dependency required by "dev-qt/qtdeclarative-6.11.2-r1::gentoo" [ebuild])
+# (dependency required by "dev-qt/qtmultimedia-6.11.2::gentoo[qml]" [ebuild])
+# (dependency required by "kde-frameworks/knotifyconfig-6.30.0::gentoo" [ebuild])
+# (dependency required by "kde-apps/kdenlive-26.08.1::gentoo" [ebuild])
+# (dependency required by "@gui-apps" [set])
+# (dependency required by "@selected" [set])
+# (dependency required by "@world" [argument])
+dev-qt/qtdeclarative wayland

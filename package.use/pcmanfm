@@ -1,0 +1,3 @@
+# pcmanfm/libfm: GTK front-end + udisks-backed removable media
+x11-libs/libfm gtk udisks
+gnome-base/gvfs udisks
