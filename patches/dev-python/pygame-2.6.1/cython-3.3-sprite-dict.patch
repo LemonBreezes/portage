@@ -1,0 +1,17 @@
+Cython 3.3 rejects assigning to the special __dict__ attribute of a cdef
+class ("Illegal use of special attribute __dict__"). The assignment is
+redundant: `cdef dict __dict__` sets tp_dictoffset, and CPython creates the
+instance dict lazily on first attribute access.
+
+diff --git a/src_c/cython/pygame/_sprite.pyx b/src_c/cython/pygame/_sprite.pyx
+index 52d0c98..44cbbe8 100644
+--- a/src_c/cython/pygame/_sprite.pyx
++++ b/src_c/cython/pygame/_sprite.pyx
+@@ -145,7 +145,6 @@ cdef class Sprite:
+     cdef dict __dict__
+ 
+     def __cinit__(self):
+-        self.__dict__ = {}
+         self.__g = set() # The groups the sprite is in
+ 
+     def __init__(self, *groups):
