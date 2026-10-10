@@ -155,7 +155,6 @@ sys-fs/fuse
 sys-fs/ntfs3g
 sys-fs/udiskie
 sys-fs/zfs
-sys-fs/zfs-kmod
 sys-kernel/linux-firmware
 sys-kernel/modprobed-db
 sys-libs/glibc
